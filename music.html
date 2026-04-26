@@ -8,8 +8,8 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<!-- WAJIB: CONFIG -->
-<script src="./js/config.js"></script>
+<!-- CONFIG -->
+<script src="config.js"></script>
 
 <style>
 body {
@@ -17,7 +17,6 @@ body {
   color: #e5e7eb;
 }
 
-/* CARD */
 .card {
   background: #111827;
   border: 1px solid rgba(255,255,255,0.05);
@@ -30,12 +29,10 @@ body {
   box-shadow: 0 10px 30px rgba(99,102,241,0.25);
 }
 
-/* BUTTON */
 .btn {
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
 }
 
-/* MODAL */
 .modal-bg {
   background: rgba(0,0,0,0.7);
 }
@@ -48,7 +45,6 @@ body {
   Produk Digital
 </h1>
 
-<!-- GRID -->
 <div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
 
 <!-- MODAL -->
@@ -65,24 +61,18 @@ body {
 </div>
 
 <script>
-// ================= CEK CONFIG =================
-if(typeof productsData === "undefined"){
-  document.getElementById("grid").innerHTML =
-    "<p class='text-center text-gray-400'>Config belum dimuat</p>";
-}
-
-// ================= AMBIL DATA =================
+// ================= DATA =================
 const products = (productsData && productsData["Produk Digital"]) || [];
-
-const grid = document.getElementById("grid");
+const WA = CONFIG?.sosial_media?.whatsapp || "";
 
 // ================= RENDER =================
+const grid = document.getElementById("grid");
+
 if(products.length === 0){
-  grid.innerHTML = "<p class='text-center text-gray-400'>Produk kosong</p>";
+  grid.innerHTML = "<p class='text-gray-400'>Produk tidak ditemukan</p>";
 }
 
 products.forEach(p => {
-
   const el = document.createElement("div");
   el.className = "card p-4";
 
@@ -109,7 +99,6 @@ products.forEach(p => {
 // ================= MODAL =================
 function openModal(id){
   const product = products.find(p => p.id === id);
-
   if(!product) return;
 
   document.getElementById("modal").classList.remove("hidden");
@@ -126,9 +115,9 @@ function openModal(id){
     item.innerHTML = `
       <span>${v.name}</span>
       <span>Rp ${Number(v.price).toLocaleString()}</span>
-      <button onclick="addToCart('${product.name}','${v.name}',${v.price})"
-        class="bg-indigo-500 px-2 rounded">
-        +
+      <button onclick="orderWA('${product.name}','${v.name}',${v.price})"
+        class="bg-green-500 px-2 rounded">
+        Pesan
       </button>
     `;
 
@@ -140,27 +129,24 @@ function closeModal(){
   document.getElementById("modal").classList.add("hidden");
 }
 
-// ================= CART =================
-function addToCart(nama, varian, harga){
+// ================= WHATSAPP =================
+function orderWA(nama, varian, harga){
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const pesan = `
+Halo admin ${CONFIG.nama} 👋
 
-  let existing = cart.find(item => item.nama === nama && item.varian === varian);
+Saya ingin order:
 
-  if(existing){
-    existing.qty += 1;
-  } else {
-    cart.push({
-      nama: nama,
-      varian: varian,
-      harga: Number(harga),
-      qty: 1
-    });
-  }
+🛍 Produk: ${nama}
+📦 Varian: ${varian}
+💰 Harga: Rp ${Number(harga).toLocaleString()}
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+Mohon diproses ya 🙏
+`;
 
-  alert("Ditambahkan ke keranjang");
+  const url = `https://wa.me/${WA}?text=${encodeURIComponent(pesan)}`;
+
+  window.open(url, "_blank");
 }
 </script>
 
