@@ -3,13 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Produk Digital</title>
+<title>Produk Fisik</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<!-- CONFIG -->
-<script src="config.js"></script>
 
 <style>
 body {
@@ -21,6 +17,7 @@ body {
   background: #111827;
   border: 1px solid rgba(255,255,255,0.05);
   border-radius: 16px;
+  overflow: hidden;
   transition: 0.25s;
 }
 
@@ -29,122 +26,93 @@ body {
   box-shadow: 0 10px 30px rgba(99,102,241,0.25);
 }
 
+.badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.badge-second {
+  background: #f59e0b;
+}
+
+.badge-ori {
+  background: #10b981;
+}
+
 .btn {
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
 }
-
-.modal-bg {
-  background: rgba(0,0,0,0.7);
-}
 </style>
+
+<script src="products.js"></script>
 </head>
 
 <body class="p-6">
 
 <h1 class="text-lg font-semibold text-indigo-400 mb-6">
-  Produk Digital
+  🛍️ Produk Tersedia
 </h1>
 
 <div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
 
-<!-- MODAL -->
-<div id="modal" class="fixed inset-0 modal-bg flex items-center justify-center hidden">
-  <div class="bg-gray-900 p-5 rounded-xl w-80">
-    <h2 id="modalTitle" class="text-md font-semibold mb-3"></h2>
-
-    <div id="variantList" class="space-y-2"></div>
-
-    <button onclick="closeModal()" class="mt-4 text-sm text-gray-400">
-      Tutup
-    </button>
-  </div>
-</div>
-
 <script>
-// ================= DATA =================
-const products = (productsData && productsData["Produk Digital"]) || [];
-const WA = CONFIG?.sosial_media?.whatsapp || "";
-
-// ================= RENDER =================
 const grid = document.getElementById("grid");
 
-if(products.length === 0){
-  grid.innerHTML = "<p class='text-gray-400'>Produk tidak ditemukan</p>";
-}
-
 products.forEach(p => {
+
+  const badgeClass = p.condition === "Ori" ? "badge-ori" : "badge-second";
+
   const el = document.createElement("div");
-  el.className = "card p-4";
+  el.className = "card";
 
   el.innerHTML = `
-    <div class="flex justify-center text-indigo-400 text-3xl mb-3">
-      <i class="${p.icon}"></i>
+    <img src="${p.image}" class="w-full h-36 object-cover">
+
+    <div class="p-3">
+      <div class="flex justify-between items-center">
+        <h2 class="text-sm font-semibold">${p.name}</h2>
+        <span class="badge ${badgeClass}">${p.condition}</span>
+      </div>
+
+      <p class="text-indigo-400 text-sm mt-1">
+        Rp ${p.price.toLocaleString()}
+      </p>
+
+      <p class="text-xs text-gray-400 mt-1">
+        ${p.description}
+      </p>
+
+      <p class="text-xs mt-1">
+        Stok: ${p.stock}
+      </p>
+
+      <button onclick="orderWA('${p.name}', '${p.condition}', ${p.price})"
+        class="btn mt-3 w-full py-2 rounded-lg text-xs">
+        Beli Sekarang
+      </button>
     </div>
-
-    <h2 class="text-sm font-semibold text-center">${p.name}</h2>
-
-    <p class="text-xs text-gray-400 text-center mt-2">
-      ${p.description}
-    </p>
-
-    <button onclick="openModal(${p.id})"
-      class="btn mt-3 w-full py-2 rounded-lg text-xs">
-      Pilih
-    </button>
   `;
 
   grid.appendChild(el);
 });
 
-// ================= MODAL =================
-function openModal(id){
-  const product = products.find(p => p.id === id);
-  if(!product) return;
-
-  document.getElementById("modal").classList.remove("hidden");
-  document.getElementById("modalTitle").textContent = product.name;
-
-  const list = document.getElementById("variantList");
-  list.innerHTML = "";
-
-  product.variants.forEach(v => {
-    const item = document.createElement("div");
-
-    item.className = "flex justify-between bg-gray-800 p-2 rounded text-xs";
-
-    item.innerHTML = `
-      <span>${v.name}</span>
-      <span>Rp ${Number(v.price).toLocaleString()}</span>
-      <button onclick="orderWA('${product.name}','${v.name}',${v.price})"
-        class="bg-green-500 px-2 rounded">
-        Pesan
-      </button>
-    `;
-
-    list.appendChild(item);
-  });
-}
-
-function closeModal(){
-  document.getElementById("modal").classList.add("hidden");
-}
-
 // ================= WHATSAPP =================
-function orderWA(nama, varian, harga){
+function orderWA(nama, kondisi, harga){
 
   const pesan = `
-Halo admin ${CONFIG.nama} 👋
+Halo admin ${STORE.nama} 👋
 
-Saya ingin order:
+Saya ingin membeli:
 
 🛍 Produk: ${nama}
-📦 Varian: ${varian}
-💰 Harga: Rp ${Number(harga).toLocaleString()}
+📦 Kondisi: ${kondisi}
+💰 Harga: Rp ${harga.toLocaleString()}
 
-Mohon diproses ya 🙏
+Apakah masih tersedia?
 `;
 
-  const url = `https://wa.me/${WA}?text=${encodeURIComponent(pesan)}`;
+  const url = `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(pesan)}`;
 
   window.open(url, "_blank");
 }
