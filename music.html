@@ -6,7 +6,8 @@
 <title>Produk Fisik</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="./produkf.js"></script>
+<script src="./products.js"></script>
+
 <style>
 body {
   background: linear-gradient(180deg, #0f172a, #020617);
@@ -26,78 +27,97 @@ body {
   box-shadow: 0 10px 30px rgba(99,102,241,0.25);
 }
 
-.badge {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 6px;
-}
-
-.badge-second {
-  background: #f59e0b;
-}
-
-.badge-ori {
-  background: #10b981;
-}
-
 .btn {
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
 }
-</style>
 
-<script src="products.js"></script>
+/* skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0 }
+  100% { background-position: -200% 0 }
+}
+</style>
 </head>
 
-<body class="p-6">
+<body class="p-4">
 
-<h1 class="text-lg font-semibold text-indigo-400 mb-6">
+<h1 class="text-lg font-semibold text-indigo-400 mb-4">
   🛍️ Produk Tersedia
 </h1>
 
-<div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+<div id="grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4"></div>
 
 <script>
-const grid = document.getElementById("grid");
+document.addEventListener("DOMContentLoaded", () => {
 
-products.forEach(p => {
+  const grid = document.getElementById("grid");
 
-  const badgeClass = p.condition === "Ori" ? "badge-ori" : "badge-second";
+  if(!products || products.length === 0){
+    grid.innerHTML = "<p class='text-gray-400 text-center'>Produk kosong</p>";
+    return;
+  }
 
-  const el = document.createElement("div");
-  el.className = "card";
+  products.forEach(p => {
 
-  el.innerHTML = `
-    <img src="${p.image}" class="w-full h-36 object-cover">
+    const badgeClass = p.condition === "Ori" 
+      ? "bg-green-500" 
+      : "bg-yellow-500";
 
-    <div class="p-3">
-      <div class="flex justify-between items-center">
-        <h2 class="text-sm font-semibold">${p.name}</h2>
-        <span class="badge ${badgeClass}">${p.condition}</span>
+    const el = document.createElement("div");
+    el.className = "card";
+
+    el.innerHTML = `
+      <div class="relative">
+        <div class="skeleton w-full h-32 absolute"></div>
+
+        <img 
+          src="${p.image}" 
+          loading="lazy"
+          onload="this.previousElementSibling.style.display='none'"
+          class="w-full h-32 object-cover"
+        >
+
+        <span class="absolute top-2 right-2 text-[10px] px-2 py-1 rounded ${badgeClass}">
+          ${p.condition}
+        </span>
       </div>
 
-      <p class="text-indigo-400 text-sm mt-1">
-        Rp ${p.price.toLocaleString()}
-      </p>
+      <div class="p-3">
+        <h2 class="text-sm font-semibold line-clamp-1">
+          ${p.name}
+        </h2>
 
-      <p class="text-xs text-gray-400 mt-1">
-        ${p.description}
-      </p>
+        <p class="text-indigo-400 text-sm mt-1">
+          Rp ${p.price.toLocaleString()}
+        </p>
 
-      <p class="text-xs mt-1">
-        Stok: ${p.stock}
-      </p>
+        <p class="text-xs text-gray-400 mt-1 line-clamp-2">
+          ${p.description}
+        </p>
 
-      <button onclick="orderWA('${p.name}', '${p.condition}', ${p.price})"
-        class="btn mt-3 w-full py-2 rounded-lg text-xs">
-        Beli Sekarang
-      </button>
-    </div>
-  `;
+        <p class="text-xs mt-1">
+          Stok: ${p.stock}
+        </p>
 
-  grid.appendChild(el);
+        <button onclick="orderWA('${p.name}','${p.condition}',${p.price})"
+          class="btn mt-3 w-full py-2 rounded-lg text-xs">
+          Beli
+        </button>
+      </div>
+    `;
+
+    grid.appendChild(el);
+  });
+
 });
 
-// ================= WHATSAPP =================
+// WA
 function orderWA(nama, kondisi, harga){
 
   const pesan = `
@@ -113,7 +133,6 @@ Apakah masih tersedia?
 `;
 
   const url = `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(pesan)}`;
-
   window.open(url, "_blank");
 }
 </script>
