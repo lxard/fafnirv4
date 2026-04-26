@@ -16,8 +16,13 @@
       background: rgba(255,255,255,0.08);
     }
 
-    .glow {
-      transition: box-shadow 0.5s ease;
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 25px rgba(255,255,255,0.15);
     }
 
     .rain::before {
@@ -32,213 +37,89 @@
   </style>
 </head>
 
-<body class="flex items-center justify-center min-h-screen text-white">
+<body class="text-white p-6">
 
-<div id="card" class="relative w-80 rounded-3xl p-4 glass shadow-2xl glow rain">
+<h1 class="text-xl mb-6 text-center">🛍️ Katalog Produk</h1>
 
-  <!-- HEADER -->
-  <div class="flex justify-between items-center mb-3">
-    <h1 class="text-sm text-gray-300">Katalog Produk</h1>
-    <button onclick="goHome()" class="text-xs text-gray-400 hover:text-white">
-      Keluar
-    </button>
-  </div>
-
-  <!-- GAMBAR PRODUK -->
-  <div class="rounded-2xl overflow-hidden">
-    <img id="img" src="./img/product1.jpg" class="w-full h-60 object-cover">
-  </div>
-
-  <!-- INFO PRODUK -->
-  <div class="mt-4">
-    <p id="category" class="text-xs text-gray-400">Kategori</p>
-    <h2 id="name" class="text-lg font-semibold">Nama Produk</h2>
-    <p id="price" class="text-white mt-1">Rp 0</p>
-    <p id="desc" class="text-gray-400 text-xs mt-1">Deskripsi produk</p>
-  </div>
-
-  <!-- TOMBOL BELI -->
-  <div class="mt-4">
-    <button onclick="buyProduct()"
-      class="w-full py-3 rounded-xl bg-white/20 hover:bg-white/30 transition text-sm">
-      🛒 Beli Sekarang
-    </button>
-  </div>
-
-  <!-- NAVIGASI -->
-  <div class="flex justify-between mt-4 text-sm text-gray-300">
-    <button onclick="prev()">← Sebelumnya</button>
-    <button onclick="next()">Berikutnya →</button>
-  </div>
-
-  <!-- LIST PRODUK -->
-  <div class="mt-4 space-y-2 max-h-32 overflow-y-auto">
-    <div id="list"></div>
-  </div>
-
-</div>
+<!-- GRID -->
+<div id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
 
 <script>
-// ================= DATA PRODUK =================
+// ================= DATA =================
 const products = [
   {
     name: "Lampu LED RGB",
     price: "Rp 45.000",
     category: "Aksesoris",
-    desc: "Lampu aesthetic dengan 16 warna",
+    desc: "Lampu aesthetic dengan 16 warna, cocok untuk kamar atau setup gaming.",
     img: "./img/product1.jpg"
   },
   {
     name: "Headset Gaming",
     price: "Rp 120.000",
     category: "Elektronik",
-    desc: "Suara jernih + mic",
+    desc: "Suara jernih dengan mic, nyaman dipakai lama.",
     img: "./img/product2.jpg"
   },
   {
     name: "Keyboard RGB",
     price: "Rp 150.000",
     category: "Komputer",
-    desc: "Mechanical feel + lighting",
+    desc: "Keyboard dengan efek RGB dan feel seperti mechanical.",
     img: "./img/product3.jpg"
   },
   {
     name: "Mouse Wireless",
     price: "Rp 80.000",
     category: "Komputer",
-    desc: "Ringan dan responsif",
+    desc: "Ringan, tanpa kabel, cocok untuk kerja dan gaming.",
     img: "./img/product4.jpg"
   },
   {
     name: "Lampu Meja Minimalis",
     price: "Rp 95.000",
     category: "Dekorasi",
-    desc: "Cocok untuk setup aesthetic",
+    desc: "Desain minimalis untuk meja kerja atau belajar.",
     img: "./img/product5.jpg"
   }
 ];
 
-// ================= INIT =================
-let index = 0;
+// ================= RENDER =================
+const grid = document.getElementById("grid");
 
-const img = document.getElementById("img");
-const nameEl = document.getElementById("name");
-const priceEl = document.getElementById("price");
-const descEl = document.getElementById("desc");
-const categoryEl = document.getElementById("category");
-const list = document.getElementById("list");
-const card = document.getElementById("card");
+products.forEach(p => {
 
-// ================= LOAD PRODUK =================
-function loadProduct(i){
-  const p = products[i];
+  const card = document.createElement("div");
+  card.className = "glass rain card rounded-2xl p-4";
 
-  img.src = p.img;
-  nameEl.textContent = p.name;
-  priceEl.textContent = p.price;
-  descEl.textContent = p.desc;
-  categoryEl.textContent = p.category;
+  card.innerHTML = `
+    <div class="rounded-xl overflow-hidden">
+      <img src="${p.img}" class="w-full h-40 object-cover">
+    </div>
 
-  setGlow(p.img);
-}
+    <div class="mt-3">
+      <p class="text-xs text-gray-400">${p.category}</p>
+      <h2 class="text-md font-semibold">${p.name}</h2>
+      <p class="text-white text-sm mt-1">${p.price}</p>
+      <p class="text-gray-400 text-xs mt-1">${p.desc}</p>
+    </div>
 
-// ================= NAVIGASI =================
-function prev(){
-  index = (index - 1 + products.length) % products.length;
-  loadProduct(index);
-  renderList();
-}
+    <button onclick="buyProduct('${p.name}')"
+      class="mt-3 w-full py-2 rounded-lg bg-white/20 hover:bg-white/30 text-sm transition">
+      🛒 Beli
+    </button>
+  `;
 
-function next(){
-  index = (index + 1) % products.length;
-  loadProduct(index);
-  renderList();
-}
+  grid.appendChild(card);
+});
 
 // ================= BELI =================
-function buyProduct(){
-  const p = products[index];
-
-  const original = card.style.boxShadow;
-  card.style.boxShadow = original + ", 0 0 80px rgba(255,215,0,0.5)";
-
-  setTimeout(()=>{
-    window.open(
-      "https://wa.me/62xxxx?text=Halo%20saya%20ingin%20membeli%20" + encodeURIComponent(p.name),
-      "_blank"
-    );
-    card.style.boxShadow = original;
-  },300);
+function buyProduct(name){
+  window.open(
+    "https://wa.me/62xxxx?text=Halo%20saya%20ingin%20membeli%20" + encodeURIComponent(name),
+    "_blank"
+  );
 }
-
-// ================= LIST =================
-function renderList(){
-  list.innerHTML = "";
-
-  products.forEach((p,i)=>{
-    const el = document.createElement("div");
-
-    el.className = `p-2 rounded-lg cursor-pointer text-xs ${
-      i === index ? "bg-white/30" : "bg-white/10"
-    }`;
-
-    el.textContent = p.name;
-
-    el.onclick = ()=>{
-      index = i;
-      loadProduct(i);
-      renderList();
-    };
-
-    list.appendChild(el);
-  });
-}
-
-// ================= GLOW WARNA =================
-function setGlow(src){
-  const image = new Image();
-  image.crossOrigin = "Anonymous";
-  image.src = src;
-
-  image.onload = ()=>{
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = image.width;
-    canvas.height = image.height;
-
-    ctx.drawImage(image,0,0);
-
-    const data = ctx.getImageData(0,0,image.width,image.height).data;
-
-    let r=0,g=0,b=0,count=0;
-
-    for(let i=0;i<data.length;i+=40){
-      r+=data[i];
-      g+=data[i+1];
-      b+=data[i+2];
-      count++;
-    }
-
-    r=Math.floor(r/count);
-    g=Math.floor(g/count);
-    b=Math.floor(b/count);
-
-    card.style.boxShadow =
-      `0 0 20px rgba(${r},${g},${b},0.3),
-       0 0 40px rgba(${r},${g},${b},0.25),
-       0 0 60px rgba(${r},${g},${b},0.2)`;
-  };
-}
-
-// ================= NAV HOME =================
-function goHome(){
-  window.location.href = "index.html";
-}
-
-// ================= START =================
-loadProduct(index);
-renderList();
 </script>
 
 </body>
