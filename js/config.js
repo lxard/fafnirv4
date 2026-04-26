@@ -28,21 +28,11 @@ const productsData = {
   //           "Akun Game": [
   // {
   //   "id": 1,
-  //   "name": "Akun Mobile Legends",
+  //   "name": "Akun Game",
   //   "icon": "fas fa-user",
-  //   "description": "Akun Mobile Legends siap pakai dengan berbagai pilihan rank.",
+  //   "description": "Akun Game siap pakai dengan berbagai pilihan.",
   //   "variants": [
-  //     { "name": "Akun Warrior", "price": 15000 },
-  //     { "name": "Akun Elite", "price": 25000 },
-  //     { "name": "Akun Master", "price": 40000 },
-  //     { "name": "Akun Grandmaster", "price": 60000 },
-  //     { "name": "Akun Epic", "price": 85000 },
-  //     { "name": "Akun Legend", "price": 120000 },
-  //     { "name": "Akun Mythic", "price": 180000 },
-  //     { "name": "Akun Mythic Glory", "price": 250000 },
-  //     { "name": "Akun Sultan", "price": 350000 },
-  //     { "name": "Akun Full Skin", "price": 500000 },
-  //     { "name": "Akun Premium", "price": 750000 }
+  //     { "name": "Akun xnxx", "price": 15000 }
   //   ]
   // },
   // {
