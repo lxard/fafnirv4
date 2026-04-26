@@ -1,86 +1,93 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Katalog Produk</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produk Digital</title>
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <style>
-    body {
-      background: radial-gradient(circle at top, #0f172a, #000);
-    }
+<style>
+body {
+  background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+  color: #e5e7eb;
+  font-family: system-ui, sans-serif;
+}
 
-    .glass {
-      backdrop-filter: blur(20px);
-      background: rgba(255,255,255,0.08);
-    }
+/* CARD */
+.card {
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px;
+  transition: 0.25s;
+}
 
-    .card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(99,102,241,0.25);
+}
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 25px rgba(255,255,255,0.15);
-    }
+/* BUTTON */
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  transition: 0.3s;
+}
 
-    .rain::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: url('https://i.ibb.co/7QpKsCX/rain.gif');
-      opacity: 0.05;
-      border-radius: 24px;
-      pointer-events: none;
-    }
-  </style>
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.text-muted {
+  color: #9ca3af;
+}
+</style>
 </head>
 
-<body class="text-white p-6">
+<body class="p-6">
 
-<h1 class="text-xl mb-6 text-center">🛍️ Katalog Produk</h1>
+<h1 class="text-lg font-semibold text-indigo-400 mb-6">
+  Produk Digital
+</h1>
 
 <!-- GRID -->
-<div id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+<div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
 
 <script>
-// ================= DATA =================
+// ================= DATA PRODUK =================
 const products = [
   {
-    name: "Lampu LED RGB",
-    price: "Rp 45.000",
-    category: "Aksesoris",
-    desc: "Lampu aesthetic dengan 16 warna, cocok untuk kamar atau setup gaming.",
-    img: "./img/product1.jpg"
+    id: 1,
+    name: "Video Editing",
+    price: 50000,
+    desc: "Jasa edit video profesional (cinematic, reels, dll)",
+    img: "https://cdn-icons-png.flaticon.com/512/727/727245.png"
   },
   {
-    name: "Headset Gaming",
-    price: "Rp 120.000",
-    category: "Elektronik",
-    desc: "Suara jernih dengan mic, nyaman dipakai lama.",
-    img: "./img/product2.jpg"
+    id: 2,
+    name: "Paid Edit",
+    price: 30000,
+    desc: "Edit cepat dan rapi untuk konten sosial media",
+    img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
   },
   {
-    name: "Keyboard RGB",
-    price: "Rp 150.000",
-    category: "Komputer",
-    desc: "Keyboard dengan efek RGB dan feel seperti mechanical.",
-    img: "./img/product3.jpg"
+    id: 3,
+    name: "Poster Design",
+    price: 25000,
+    desc: "Desain poster aesthetic & modern",
+    img: "https://cdn-icons-png.flaticon.com/512/1828/1828919.png"
   },
   {
-    name: "Mouse Wireless",
-    price: "Rp 80.000",
-    category: "Komputer",
-    desc: "Ringan, tanpa kabel, cocok untuk kerja dan gaming.",
-    img: "./img/product4.jpg"
+    id: 4,
+    name: "Thumbnail",
+    price: 20000,
+    desc: "Thumbnail YouTube menarik dan CTR tinggi",
+    img: "https://cdn-icons-png.flaticon.com/512/1828/1828925.png"
   },
   {
-    name: "Lampu Meja Minimalis",
-    price: "Rp 95.000",
-    category: "Dekorasi",
-    desc: "Desain minimalis untuk meja kerja atau belajar.",
-    img: "./img/product5.jpg"
+    id: 5,
+    name: "Akun Premium",
+    price: 15000,
+    desc: "Akun premium murah & terpercaya",
+    img: "https://cdn-icons-png.flaticon.com/512/847/847969.png"
   }
 ];
 
@@ -88,38 +95,60 @@ const products = [
 const grid = document.getElementById("grid");
 
 products.forEach(p => {
+  const el = document.createElement("div");
 
-  const card = document.createElement("div");
-  card.className = "glass rain card rounded-2xl p-4";
+  el.className = "card p-4";
 
-  card.innerHTML = `
-    <div class="rounded-xl overflow-hidden">
-      <img src="${p.img}" class="w-full h-40 object-cover">
+  el.innerHTML = `
+    <div class="flex justify-center mb-3">
+      <img src="${p.img}" class="w-12 h-12">
     </div>
 
-    <div class="mt-3">
-      <p class="text-xs text-gray-400">${p.category}</p>
-      <h2 class="text-md font-semibold">${p.name}</h2>
-      <p class="text-white text-sm mt-1">${p.price}</p>
-      <p class="text-gray-400 text-xs mt-1">${p.desc}</p>
-    </div>
+    <h2 class="text-sm font-semibold text-center">${p.name}</h2>
+    <p class="text-indigo-400 text-xs text-center mt-1">
+      Rp ${p.price.toLocaleString()}
+    </p>
 
-    <button onclick="buyProduct('${p.name}')"
-      class="mt-3 w-full py-2 rounded-lg bg-white/20 hover:bg-white/30 text-sm transition">
-      🛒 Beli
+    <p class="text-muted text-xs text-center mt-2">
+      ${p.desc}
+    </p>
+
+    <button onclick="addToCart(${p.id})"
+      class="btn-primary mt-3 w-full py-2 rounded-lg text-xs">
+      + Keranjang
     </button>
   `;
 
-  grid.appendChild(card);
+  grid.appendChild(el);
 });
 
-// ================= BELI =================
-function buyProduct(name){
-  window.open(
-    "https://wa.me/62xxxx?text=Halo%20saya%20ingin%20membeli%20" + encodeURIComponent(name),
-    "_blank"
-  );
+// ================= CART SYSTEM =================
+function addToCart(id){
+  const product = products.find(p => p.id === id);
+
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  cart.push(product);
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  updateCartBadge();
+
+  alert(product.name + " ditambahkan ke keranjang");
 }
+
+// ================= UPDATE BADGE =================
+function updateCartBadge(){
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const badge = document.getElementById("cartCount");
+  if(badge){
+    badge.textContent = cart.length;
+  }
+}
+
+// INIT
+updateCartBadge();
 </script>
 
 </body>
