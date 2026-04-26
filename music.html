@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Produk Digital</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 body {
-  background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+  background: linear-gradient(180deg, #0f172a, #020617);
   color: #e5e7eb;
-  font-family: system-ui, sans-serif;
 }
 
 /* CARD */
@@ -27,17 +28,12 @@ body {
 }
 
 /* BUTTON */
-.btn-primary {
+.btn {
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  transition: 0.3s;
 }
 
-.btn-primary:hover {
-  opacity: 0.9;
-}
-
-.text-muted {
-  color: #9ca3af;
+.modal {
+  display: none;
 }
 </style>
 </head>
@@ -51,104 +47,99 @@ body {
 <!-- GRID -->
 <div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
 
-<script>
-// ================= DATA PRODUK =================
-const products = [
-  {
-    id: 1,
-    name: "Video Editing",
-    price: 50000,
-    desc: "Jasa edit video profesional (cinematic, reels, dll)",
-    img: "https://cdn-icons-png.flaticon.com/512/727/727245.png"
-  },
-  {
-    id: 2,
-    name: "Paid Edit",
-    price: 30000,
-    desc: "Edit cepat dan rapi untuk konten sosial media",
-    img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
-  },
-  {
-    id: 3,
-    name: "Poster Design",
-    price: 25000,
-    desc: "Desain poster aesthetic & modern",
-    img: "https://cdn-icons-png.flaticon.com/512/1828/1828919.png"
-  },
-  {
-    id: 4,
-    name: "Thumbnail",
-    price: 20000,
-    desc: "Thumbnail YouTube menarik dan CTR tinggi",
-    img: "https://cdn-icons-png.flaticon.com/512/1828/1828925.png"
-  },
-  {
-    id: 5,
-    name: "Akun Premium",
-    price: 15000,
-    desc: "Akun premium murah & terpercaya",
-    img: "https://cdn-icons-png.flaticon.com/512/847/847969.png"
-  }
-];
+<!-- MODAL VARIANT -->
+<div id="modal" class="fixed inset-0 bg-black/60 flex items-center justify-center modal">
+  <div class="bg-gray-900 p-5 rounded-xl w-80">
+    <h2 id="modalTitle" class="text-md font-semibold mb-3"></h2>
 
-// ================= RENDER =================
+    <div id="variantList" class="space-y-2"></div>
+
+    <button onclick="closeModal()" class="mt-4 text-sm text-gray-400">
+      Tutup
+    </button>
+  </div>
+</div>
+
+<script>
+// ================= AMBIL DATA =================
+const products = productsData["Produk Digital"];
+
 const grid = document.getElementById("grid");
 
+// ================= RENDER =================
 products.forEach(p => {
-  const el = document.createElement("div");
 
+  const el = document.createElement("div");
   el.className = "card p-4";
 
   el.innerHTML = `
-    <div class="flex justify-center mb-3">
-      <img src="${p.img}" class="w-12 h-12">
+    <div class="flex justify-center text-indigo-400 text-3xl mb-3">
+      <i class="${p.icon}"></i>
     </div>
 
     <h2 class="text-sm font-semibold text-center">${p.name}</h2>
-    <p class="text-indigo-400 text-xs text-center mt-1">
-      Rp ${p.price.toLocaleString()}
+
+    <p class="text-xs text-gray-400 text-center mt-2">
+      ${p.description}
     </p>
 
-    <p class="text-muted text-xs text-center mt-2">
-      ${p.desc}
-    </p>
-
-    <button onclick="addToCart(${p.id})"
-      class="btn-primary mt-3 w-full py-2 rounded-lg text-xs">
-      + Keranjang
+    <button onclick="openModal(${p.id})"
+      class="btn mt-3 w-full py-2 rounded-lg text-xs">
+      Pilih
     </button>
   `;
 
   grid.appendChild(el);
 });
 
-// ================= CART SYSTEM =================
-function addToCart(id){
+// ================= MODAL =================
+function openModal(id){
   const product = products.find(p => p.id === id);
+
+  document.getElementById("modal").style.display = "flex";
+  document.getElementById("modalTitle").textContent = product.name;
+
+  const list = document.getElementById("variantList");
+  list.innerHTML = "";
+
+  product.variants.forEach(v => {
+    const item = document.createElement("div");
+
+    item.className = "flex justify-between bg-gray-800 p-2 rounded";
+
+    item.innerHTML = `
+      <span>${v.name}</span>
+      <span>Rp ${v.price.toLocaleString()}</span>
+      <button onclick="addToCart('${product.name}','${v.name}',${v.price})"
+        class="text-xs bg-indigo-500 px-2 rounded">
+        +
+      </button>
+    `;
+
+    list.appendChild(item);
+  });
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display = "none";
+}
+
+// ================= CART =================
+function addToCart(nama, varian, harga){
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  cart.push(product);
+  cart.push({
+    nama: nama,
+    varian: varian,
+    harga: harga,
+    qty: 1
+  });
 
   localStorage.setItem("cart", JSON.stringify(cart));
 
-  updateCartBadge();
-
-  alert(product.name + " ditambahkan ke keranjang");
+  alert("Ditambahkan ke keranjang");
 }
-
-// ================= UPDATE BADGE =================
-function updateCartBadge(){
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  const badge = document.getElementById("cartCount");
-  if(badge){
-    badge.textContent = cart.length;
-  }
-}
-
-// INIT
-updateCartBadge();
 </script>
 
 </body>
