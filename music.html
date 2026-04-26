@@ -3,65 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Player Glass</title>
+  <title>Product Showcase Glass</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
     body { background: radial-gradient(circle at top, #0f172a, #000); }
-    .glass { backdrop-filter: blur(20px); background: rgba(255,255,255,0.08); }
-    .glow-dynamic { transition: box-shadow 0.5s ease; }
-    .wet::after {
-      content: ""; position: absolute; inset: 0;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 40%),
-                  radial-gradient(circle at 70% 60%, rgba(255,255,255,0.12), transparent 40%);
-      mix-blend-mode: overlay; border-radius: 24px; pointer-events: none;
+
+    .glass {
+      backdrop-filter: blur(20px);
+      background: rgba(255,255,255,0.08);
     }
+
+    .glow-dynamic {
+      transition: box-shadow 0.5s ease;
+    }
+
+    .wet::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 40%),
+        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.12), transparent 40%);
+      mix-blend-mode: overlay;
+      border-radius: 24px;
+      pointer-events: none;
+    }
+
     .rain::before {
-      content: ""; position: absolute; inset: 0;
+      content: "";
+      position: absolute;
+      inset: 0;
       background: url('https://i.ibb.co/7QpKsCX/rain.gif');
-      opacity: 0.07; pointer-events: none; border-radius: 24px;
+      opacity: 0.07;
+      pointer-events: none;
+      border-radius: 24px;
     }
   </style>
 </head>
+
 <body class="flex items-center justify-center min-h-screen text-white">
 
-<div id="playerCard" class="relative w-80 rounded-3xl p-4 glass shadow-2xl glow-dynamic rain wet">
+<div id="card" class="relative w-80 rounded-3xl p-4 glass shadow-2xl glow-dynamic rain wet">
 
-  <button onclick="goHome()" class="mb-3 text-sm text-gray-300 hover:text-white">← Kembali</button>
+  <!-- Back -->
+  <button onclick="goHome()" class="mb-3 text-sm text-gray-300 hover:text-white">
+    ← Kembali
+  </button>
 
-  <!-- Cover -->
+  <!-- Image -->
   <div class="rounded-2xl overflow-hidden">
-    <img id="cover" src="./img/cover.jpg" class="w-full h-60 object-cover">
+    <img id="img" src="./img/product1.jpg" class="w-full h-60 object-cover">
   </div>
 
   <!-- Info -->
   <div class="mt-4">
-    <p class="text-sm text-gray-300">Spotify</p>
-    <h2 id="title" class="text-lg font-semibold">Judul Lagu</h2>
-    <p id="artist" class="text-gray-400 text-sm">Artist</p>
-  </div>
-
-  <!-- Progress -->
-  <div class="mt-4">
-    <input type="range" id="progress" value="0" class="w-full">
-    <div class="flex justify-between text-xs text-gray-400 mt-1">
-      <span id="current">0:00</span>
-      <span id="duration">0:00</span>
-    </div>
+    <h2 id="name" class="text-lg font-semibold">Nama Produk</h2>
+    <p id="price" class="text-gray-300 text-sm">Rp 0</p>
+    <p id="desc" class="text-gray-400 text-xs mt-1">Deskripsi produk</p>
   </div>
 
   <!-- Controls -->
   <div class="flex justify-center items-center gap-6 mt-4 text-xl">
     <button onclick="prev()">⏮</button>
-    <button onclick="togglePlay()" id="playBtn" class="text-3xl">▶</button>
+
+    <button onclick="buyProduct()"
+      class="text-sm px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 transition">
+      🛒 Beli
+    </button>
+
     <button onclick="next()">⏭</button>
   </div>
 
-  <!-- Volume -->
-  <div class="mt-4">
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="1" class="w-full">
-  </div>
-
-  <!-- Playlist -->
+  <!-- List -->
   <div class="mt-4 space-y-2 max-h-32 overflow-y-auto">
     <div id="list"></div>
   </div>
@@ -76,99 +90,176 @@
 
 </div>
 
-<audio id="audio"></audio>
-
 <script>
-const playlist = [
-  {title:"Lilakne Lungamu", artist:"NDX A.K.A", src:"./img/music1.mp3", cover:"./img/cover.jpg"},
-  {title:"Lagu Kedua", artist:"Artist 2", src:"music2.mp3", cover:"cover2.jpg"},
-  {title:"Lagu Ketiga", artist:"Artist 3", src:"music3.mp3", cover:"cover3.jpg"},
-  {title:"Lagu Keempat", artist:"Artist 4", src:"music4.mp3", cover:"cover4.jpg"},
-  {title:"Lagu Kelima", artist:"Artist 5", src:"music5.mp3", cover:"cover5.jpg"}
+// ================= DATA PRODUK =================
+const products = [
+  {
+    name: "Lampu LED RGB",
+    price: "Rp 45.000",
+    desc: "Lampu aesthetic dengan 16 warna",
+    img: "./img/product1.jpg"
+  },
+  {
+    name: "Headset Gaming",
+    price: "Rp 120.000",
+    desc: "Suara jernih + mic",
+    img: "./img/product2.jpg"
+  },
+  {
+    name: "Keyboard RGB",
+    price: "Rp 150.000",
+    desc: "Mechanical feel + lighting",
+    img: "./img/product3.jpg"
+  },
+  {
+    name: "Mouse Wireless",
+    price: "Rp 80.000",
+    desc: "Ringan dan responsif",
+    img: "./img/product4.jpg"
+  },
+  {
+    name: "Lampu Meja Minimalis",
+    price: "Rp 95.000",
+    desc: "Cocok untuk setup aesthetic",
+    img: "./img/product5.jpg"
+  }
 ];
 
+// ================= ELEMENT =================
 let index = 0;
-const audio = document.getElementById("audio");
-const progress = document.getElementById("progress");
-const current = document.getElementById("current");
-const duration = document.getElementById("duration");
-const playBtn = document.getElementById("playBtn");
-const volume = document.getElementById("volume");
-const cover = document.getElementById("cover");
-const card = document.getElementById("playerCard");
-const title = document.getElementById("title");
-const artist = document.getElementById("artist");
+
+const img = document.getElementById("img");
+const nameEl = document.getElementById("name");
+const priceEl = document.getElementById("price");
+const descEl = document.getElementById("desc");
 const list = document.getElementById("list");
+const card = document.getElementById("card");
 
-function loadSong(i){
-  const song = playlist[i];
-  audio.src = song.src;
-  cover.src = song.cover;
-  title.textContent = song.title;
-  artist.textContent = song.artist;
-  setGlow(song.cover);
+// ================= LOAD PRODUCT =================
+function loadProduct(i){
+  const p = products[i];
+
+  img.src = p.img;
+  nameEl.textContent = p.name;
+  priceEl.textContent = p.price;
+  descEl.textContent = p.desc;
+
+  setGlow(p.img);
 }
 
-function togglePlay(){
-  if(audio.paused){ audio.play(); playBtn.textContent="⏸"; }
-  else { audio.pause(); playBtn.textContent="▶"; }
+// ================= NAVIGATION =================
+function prev(){
+  index = (index - 1 + products.length) % products.length;
+  loadProduct(index);
+  renderList();
 }
 
-function prev(){ index = (index-1+playlist.length)%playlist.length; loadSong(index); audio.play(); }
-function next(){ index = (index+1)%playlist.length; loadSong(index); audio.play(); }
+function next(){
+  index = (index + 1) % products.length;
+  loadProduct(index);
+  renderList();
+}
 
-function formatTime(sec){ let m=Math.floor(sec/60); let s=Math.floor(sec%60); return m+":"+(s<10?"0":"")+s; }
+// ================= BUY =================
+function buyProduct(){
+  const p = products[index];
 
-audio.addEventListener("loadedmetadata", ()=>{ duration.textContent = formatTime(audio.duration); });
-audio.addEventListener("timeupdate", ()=>{
-  progress.value = (audio.currentTime/audio.duration)*100;
-  current.textContent = formatTime(audio.currentTime);
-});
+  // efek glow emas
+  const original = card.style.boxShadow;
+  card.style.boxShadow = original + ", 0 0 80px rgba(255,215,0,0.6)";
 
-progress.addEventListener("input", ()=>{ audio.currentTime = (progress.value/100)*audio.duration; });
-volume.addEventListener("input", ()=>{ audio.volume = volume.value; });
+  setTimeout(()=>{
+    window.open(
+      "https://wa.me/62xxxx?text=Saya%20mau%20beli%20" + encodeURIComponent(p.name),
+      "_blank"
+    );
+    card.style.boxShadow = original;
+  },300);
+}
 
-function goHome(){ window.location.href = "index.html"; }
+// ================= LIST =================
+function renderList(){
+  list.innerHTML = "";
 
-// Playlist render
-playlist.forEach((s,i)=>{
-  const el = document.createElement("div");
-  el.className = "p-2 bg-white/10 rounded-lg cursor-pointer text-sm";
-  el.textContent = s.title;
-  el.onclick = ()=>{ index=i; loadSong(i); audio.play(); };
-  list.appendChild(el);
-});
+  products.forEach((p,i)=>{
+    const el = document.createElement("div");
 
-// Glow from cover
+    el.className = `p-2 rounded-lg cursor-pointer text-sm ${
+      i === index ? "bg-white/30" : "bg-white/10"
+    }`;
+
+    el.textContent = p.name + " - " + p.price;
+
+    el.onclick = ()=>{
+      index = i;
+      loadProduct(i);
+      renderList();
+    };
+
+    list.appendChild(el);
+  });
+}
+
+// ================= GLOW =================
 function setGlow(src){
-  const img = new Image();
-  img.crossOrigin="Anonymous";
-  img.src = src;
-  img.onload = ()=>{
-    const canvas=document.createElement("canvas");
-    const ctx=canvas.getContext("2d");
-    canvas.width=img.width; canvas.height=img.height;
-    ctx.drawImage(img,0,0);
-    const data=ctx.getImageData(0,0,img.width,img.height).data;
-    let r=0,g=0,b=0,c=0;
-    for(let i=0;i<data.length;i+=40){ r+=data[i]; g+=data[i+1]; b+=data[i+2]; c++; }
-    r=Math.floor(r/c); g=Math.floor(g/c); b=Math.floor(b/c);
-    card.style.boxShadow=`0 0 20px rgba(${r},${g},${b},0.3),0 0 40px rgba(${r},${g},${b},0.25),0 0 60px rgba(${r},${g},${b},0.2)`;
+  const image = new Image();
+  image.crossOrigin = "Anonymous";
+  image.src = src;
+
+  image.onload = ()=>{
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    ctx.drawImage(image,0,0);
+
+    const data = ctx.getImageData(0,0,image.width,image.height).data;
+
+    let r=0,g=0,b=0,count=0;
+
+    for(let i=0;i<data.length;i+=40){
+      r+=data[i];
+      g+=data[i+1];
+      b+=data[i+2];
+      count++;
+    }
+
+    r=Math.floor(r/count);
+    g=Math.floor(g/count);
+    b=Math.floor(b/count);
+
+    card.style.boxShadow =
+      `0 0 20px rgba(${r},${g},${b},0.3),
+       0 0 40px rgba(${r},${g},${b},0.25),
+       0 0 60px rgba(${r},${g},${b},0.2)`;
   };
 }
 
-// ===== DANA KAGET =====
-function openDaget() {
-  // efek glow emas sebelum buka link
-  card.style.boxShadow += ", 0 0 80px rgba(255,215,0,0.6)";
-  
-  setTimeout(() => {
-    window.open("https://link.dana.id/danakaget?c=sgx459uqw&r=hZLvkJ&orderId=20260422101214177815010300166758674446288", "_blank");
-  }, 300);
+// ================= DANA KAGET =================
+function openDaget(){
+  const original = card.style.boxShadow;
+
+  card.style.boxShadow = original + ", 0 0 80px rgba(255,215,0,0.6)";
+
+  setTimeout(()=>{
+    window.open(
+      "https://link.dana.id/danakaget?c=sgx459uqw&r=hZLvkJ&orderId=20260422101214177815010300166758674446288",
+      "_blank"
+    );
+    card.style.boxShadow = original;
+  },300);
 }
 
-// init
-loadSong(index);
+// ================= HOME =================
+function goHome(){
+  window.location.href = "index.html";
+}
+
+// ================= INIT =================
+loadProduct(index);
+renderList();
 </script>
 
 </body>
