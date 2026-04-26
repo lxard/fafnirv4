@@ -3,31 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Showcase Glass</title>
+  <title>Katalog Produk</title>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    body { background: radial-gradient(circle at top, #0f172a, #000); }
+    body {
+      background: radial-gradient(circle at top, #0f172a, #000);
+    }
 
     .glass {
       backdrop-filter: blur(20px);
       background: rgba(255,255,255,0.08);
     }
 
-    .glow-dynamic {
+    .glow {
       transition: box-shadow 0.5s ease;
-    }
-
-    .wet::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 40%),
-        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.12), transparent 40%);
-      mix-blend-mode: overlay;
-      border-radius: 24px;
-      pointer-events: none;
     }
 
     .rain::before {
@@ -35,57 +25,55 @@
       position: absolute;
       inset: 0;
       background: url('https://i.ibb.co/7QpKsCX/rain.gif');
-      opacity: 0.07;
-      pointer-events: none;
+      opacity: 0.05;
       border-radius: 24px;
+      pointer-events: none;
     }
   </style>
 </head>
 
 <body class="flex items-center justify-center min-h-screen text-white">
 
-<div id="card" class="relative w-80 rounded-3xl p-4 glass shadow-2xl glow-dynamic rain wet">
+<div id="card" class="relative w-80 rounded-3xl p-4 glass shadow-2xl glow rain">
 
-  <!-- Back -->
-  <button onclick="goHome()" class="mb-3 text-sm text-gray-300 hover:text-white">
-    ← Kembali
-  </button>
+  <!-- HEADER -->
+  <div class="flex justify-between items-center mb-3">
+    <h1 class="text-sm text-gray-300">Katalog Produk</h1>
+    <button onclick="goHome()" class="text-xs text-gray-400 hover:text-white">
+      Keluar
+    </button>
+  </div>
 
-  <!-- Image -->
+  <!-- GAMBAR PRODUK -->
   <div class="rounded-2xl overflow-hidden">
     <img id="img" src="./img/product1.jpg" class="w-full h-60 object-cover">
   </div>
 
-  <!-- Info -->
+  <!-- INFO PRODUK -->
   <div class="mt-4">
+    <p id="category" class="text-xs text-gray-400">Kategori</p>
     <h2 id="name" class="text-lg font-semibold">Nama Produk</h2>
-    <p id="price" class="text-gray-300 text-sm">Rp 0</p>
+    <p id="price" class="text-white mt-1">Rp 0</p>
     <p id="desc" class="text-gray-400 text-xs mt-1">Deskripsi produk</p>
   </div>
 
-  <!-- Controls -->
-  <div class="flex justify-center items-center gap-6 mt-4 text-xl">
-    <button onclick="prev()">⏮</button>
-
+  <!-- TOMBOL BELI -->
+  <div class="mt-4">
     <button onclick="buyProduct()"
-      class="text-sm px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 transition">
-      🛒 Beli
+      class="w-full py-3 rounded-xl bg-white/20 hover:bg-white/30 transition text-sm">
+      🛒 Beli Sekarang
     </button>
-
-    <button onclick="next()">⏭</button>
   </div>
 
-  <!-- List -->
+  <!-- NAVIGASI -->
+  <div class="flex justify-between mt-4 text-sm text-gray-300">
+    <button onclick="prev()">← Sebelumnya</button>
+    <button onclick="next()">Berikutnya →</button>
+  </div>
+
+  <!-- LIST PRODUK -->
   <div class="mt-4 space-y-2 max-h-32 overflow-y-auto">
     <div id="list"></div>
-  </div>
-
-  <!-- Dana Kaget -->
-  <div class="mt-4">
-    <button onclick="openDaget()"
-      class="w-full p-3 rounded-2xl glass text-white font-semibold hover:bg-white/10 transition">
-      🎁 Ambil Dana Kaget
-    </button>
   </div>
 
 </div>
@@ -96,46 +84,52 @@ const products = [
   {
     name: "Lampu LED RGB",
     price: "Rp 45.000",
+    category: "Aksesoris",
     desc: "Lampu aesthetic dengan 16 warna",
     img: "./img/product1.jpg"
   },
   {
     name: "Headset Gaming",
     price: "Rp 120.000",
+    category: "Elektronik",
     desc: "Suara jernih + mic",
     img: "./img/product2.jpg"
   },
   {
     name: "Keyboard RGB",
     price: "Rp 150.000",
+    category: "Komputer",
     desc: "Mechanical feel + lighting",
     img: "./img/product3.jpg"
   },
   {
     name: "Mouse Wireless",
     price: "Rp 80.000",
+    category: "Komputer",
     desc: "Ringan dan responsif",
     img: "./img/product4.jpg"
   },
   {
     name: "Lampu Meja Minimalis",
     price: "Rp 95.000",
+    category: "Dekorasi",
     desc: "Cocok untuk setup aesthetic",
     img: "./img/product5.jpg"
   }
 ];
 
-// ================= ELEMENT =================
+// ================= INIT =================
 let index = 0;
 
 const img = document.getElementById("img");
 const nameEl = document.getElementById("name");
 const priceEl = document.getElementById("price");
 const descEl = document.getElementById("desc");
+const categoryEl = document.getElementById("category");
 const list = document.getElementById("list");
 const card = document.getElementById("card");
 
-// ================= LOAD PRODUCT =================
+// ================= LOAD PRODUK =================
 function loadProduct(i){
   const p = products[i];
 
@@ -143,11 +137,12 @@ function loadProduct(i){
   nameEl.textContent = p.name;
   priceEl.textContent = p.price;
   descEl.textContent = p.desc;
+  categoryEl.textContent = p.category;
 
   setGlow(p.img);
 }
 
-// ================= NAVIGATION =================
+// ================= NAVIGASI =================
 function prev(){
   index = (index - 1 + products.length) % products.length;
   loadProduct(index);
@@ -160,17 +155,16 @@ function next(){
   renderList();
 }
 
-// ================= BUY =================
+// ================= BELI =================
 function buyProduct(){
   const p = products[index];
 
-  // efek glow emas
   const original = card.style.boxShadow;
-  card.style.boxShadow = original + ", 0 0 80px rgba(255,215,0,0.6)";
+  card.style.boxShadow = original + ", 0 0 80px rgba(255,215,0,0.5)";
 
   setTimeout(()=>{
     window.open(
-      "https://wa.me/62xxxx?text=Saya%20mau%20beli%20" + encodeURIComponent(p.name),
+      "https://wa.me/62xxxx?text=Halo%20saya%20ingin%20membeli%20" + encodeURIComponent(p.name),
       "_blank"
     );
     card.style.boxShadow = original;
@@ -184,11 +178,11 @@ function renderList(){
   products.forEach((p,i)=>{
     const el = document.createElement("div");
 
-    el.className = `p-2 rounded-lg cursor-pointer text-sm ${
+    el.className = `p-2 rounded-lg cursor-pointer text-xs ${
       i === index ? "bg-white/30" : "bg-white/10"
     }`;
 
-    el.textContent = p.name + " - " + p.price;
+    el.textContent = p.name;
 
     el.onclick = ()=>{
       index = i;
@@ -200,7 +194,7 @@ function renderList(){
   });
 }
 
-// ================= GLOW =================
+// ================= GLOW WARNA =================
 function setGlow(src){
   const image = new Image();
   image.crossOrigin = "Anonymous";
@@ -237,27 +231,12 @@ function setGlow(src){
   };
 }
 
-// ================= DANA KAGET =================
-function openDaget(){
-  const original = card.style.boxShadow;
-
-  card.style.boxShadow = original + ", 0 0 80px rgba(255,215,0,0.6)";
-
-  setTimeout(()=>{
-    window.open(
-      "https://link.dana.id/danakaget?c=sgx459uqw&r=hZLvkJ&orderId=20260422101214177815010300166758674446288",
-      "_blank"
-    );
-    card.style.boxShadow = original;
-  },300);
-}
-
-// ================= HOME =================
+// ================= NAV HOME =================
 function goHome(){
   window.location.href = "index.html";
 }
 
-// ================= INIT =================
+// ================= START =================
 loadProduct(index);
 renderList();
 </script>
