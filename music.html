@@ -6,8 +6,10 @@
 <title>Produk Digital</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-  <script src="./js/config.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- WAJIB: CONFIG -->
+<script src="./js/config.js"></script>
 
 <style>
 body {
@@ -33,8 +35,9 @@ body {
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
 }
 
-.modal {
-  display: none;
+/* MODAL */
+.modal-bg {
+  background: rgba(0,0,0,0.7);
 }
 </style>
 </head>
@@ -48,8 +51,8 @@ body {
 <!-- GRID -->
 <div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
 
-<!-- MODAL VARIANT -->
-<div id="modal" class="fixed inset-0 bg-black/60 flex items-center justify-center modal">
+<!-- MODAL -->
+<div id="modal" class="fixed inset-0 modal-bg flex items-center justify-center hidden">
   <div class="bg-gray-900 p-5 rounded-xl w-80">
     <h2 id="modalTitle" class="text-md font-semibold mb-3"></h2>
 
@@ -62,12 +65,22 @@ body {
 </div>
 
 <script>
+// ================= CEK CONFIG =================
+if(typeof productsData === "undefined"){
+  document.getElementById("grid").innerHTML =
+    "<p class='text-center text-gray-400'>Config belum dimuat</p>";
+}
+
 // ================= AMBIL DATA =================
-const products = productsData["Produk Digital"];
+const products = (productsData && productsData["Produk Digital"]) || [];
 
 const grid = document.getElementById("grid");
 
 // ================= RENDER =================
+if(products.length === 0){
+  grid.innerHTML = "<p class='text-center text-gray-400'>Produk kosong</p>";
+}
+
 products.forEach(p => {
 
   const el = document.createElement("div");
@@ -97,7 +110,9 @@ products.forEach(p => {
 function openModal(id){
   const product = products.find(p => p.id === id);
 
-  document.getElementById("modal").style.display = "flex";
+  if(!product) return;
+
+  document.getElementById("modal").classList.remove("hidden");
   document.getElementById("modalTitle").textContent = product.name;
 
   const list = document.getElementById("variantList");
@@ -106,13 +121,13 @@ function openModal(id){
   product.variants.forEach(v => {
     const item = document.createElement("div");
 
-    item.className = "flex justify-between bg-gray-800 p-2 rounded";
+    item.className = "flex justify-between bg-gray-800 p-2 rounded text-xs";
 
     item.innerHTML = `
       <span>${v.name}</span>
-      <span>Rp ${v.price.toLocaleString()}</span>
+      <span>Rp ${Number(v.price).toLocaleString()}</span>
       <button onclick="addToCart('${product.name}','${v.name}',${v.price})"
-        class="text-xs bg-indigo-500 px-2 rounded">
+        class="bg-indigo-500 px-2 rounded">
         +
       </button>
     `;
@@ -122,7 +137,7 @@ function openModal(id){
 }
 
 function closeModal(){
-  document.getElementById("modal").style.display = "none";
+  document.getElementById("modal").classList.add("hidden");
 }
 
 // ================= CART =================
@@ -130,12 +145,18 @@ function addToCart(nama, varian, harga){
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  cart.push({
-    nama: nama,
-    varian: varian,
-    harga: harga,
-    qty: 1
-  });
+  let existing = cart.find(item => item.nama === nama && item.varian === varian);
+
+  if(existing){
+    existing.qty += 1;
+  } else {
+    cart.push({
+      nama: nama,
+      varian: varian,
+      harga: Number(harga),
+      qty: 1
+    });
+  }
 
   localStorage.setItem("cart", JSON.stringify(cart));
 
